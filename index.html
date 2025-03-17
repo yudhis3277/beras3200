@@ -1,0 +1,450 @@
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Modern</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --bg-light: #f4f6f7;
+            --bg-dark: #2c3e50;
+            --text-dark: #333;
+            --text-light: #f1f3f4;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        body.blue-theme {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+        }
+
+        body.green-theme {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+        }
+
+        body.orange-theme {
+            --primary-color: #e67e22;
+            --secondary-color: #d35400;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .sticky-header {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .metric-card {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .card-fixed-height {
+            height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-fixed-height .card-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive Dropdown Styling */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .dropdown-menu {
+                position: static;
+                display: none;
+                transform: none !important;
+                margin-top: 0;
+                border: none;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            .navbar .dropdown-submenu {
+                position: static;
+            }
+
+            .navbar .dropdown-submenu > .dropdown-menu {
+                left: 0;
+                right: 0;
+                margin-top: 0;
+                border-top: 1px solid rgba(0,0,0,0.1);
+            }
+
+            .dropdown-submenu .dropdown-item {
+                padding-left: 30px;
+            }
+        }
+
+        /* Enhanced Dropdown Submenu Styling */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        .dropdown-submenu > .dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -1px;
+        }
+
+        @media (max-width: 768px) {
+            .dropdown-submenu > .dropdown-menu {
+                position: static;
+                display: none;
+                margin-top: 0;
+                border: none;
+                background: transparent;
+            }
+        }
+
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+
+        .theme-dropdown {
+            min-width: 200px;
+        }
+        
+        .theme-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .theme-icon {
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .theme-icon:hover {
+            transform: scale(1.2);
+        }
+
+        /* Updated Horizontal Settings Menu */
+        .settings-menu {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 1100;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .settings-menu {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .settings-menu > * {
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            font-size: 1.2rem;
+        }
+
+        .settings-menu > *:hover {
+            transform: scale(1.2);
+        }
+
+        /* Hide existing dropdown settings */
+        .floating-settings, 
+        .navbar .dropdown.theme-dropdown {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-header">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://www.bps.go.id/_next/image?url=%2Fassets%2Flogo-bps.png&w=1080&q=75" alt="DASHBOARD MONITORING" class="img-fluid">
+            </a>
+			<span>
+			<h3>DASHBOARD MONITORING 2024</h3>
+			</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <div class="navbar-nav ms-auto">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- New Horizontal Settings Menu -->
+    <div class="settings-menu">
+        <i class="bi bi-circle-half" id="theme-toggle" title="Dark/Light Mode"></i>
+        <i class="bi bi-palette theme-icon" data-theme="blue" title="Blue Theme"></i>
+        <i class="bi bi-palette theme-icon" data-theme="green" title="Green Theme"></i>
+        <i class="bi bi-palette theme-icon" data-theme="orange" title="Orange Theme"></i>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Beras</h5>
+                        <h2>Rp 13.056/kg</h2>
+                        <small class="text-success"><i class="bi bi-arrow-up"></i> Harga Beras Jawa Barat</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Beras Premium</h5>
+                        <h2>Rp 13.296/kg</h2>
+                        <small class="text-info"><i class="bi bi-info-circle"></i> Kualitas Terbaik</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card metric-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Beras Medium</h5>
+                        <h2>Rp 12.775/kg</h2>
+                        <small class="text-warning"><i class="bi bi-star-half"></i> Kualitas Menengah</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card card-fixed-height">
+                    <div class="card-header">Perkembangan Harga Beras</div>
+                    <div class="card-body">
+                        <table id="salesTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Bulan</th>
+                                    <th>Harga Premium</th>
+                                    <th>Harga Medium</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be populated by DataTable -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-fixed-height">
+                    <div class="card-header">Perkembangan Harga per Bulan</div>
+                    <div class="card-body">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-fixed-height">
+                    <div class="card-header">Perkembangan Harga Menurut Kualitas</div>
+                    <div class="card-body">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Function
+            const themeToggle = document.querySelector('.settings-menu #theme-toggle');
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+            });
+
+            // Color Theme Selection
+            const themeIcons = document.querySelectorAll('.settings-menu .theme-icon');
+            themeIcons.forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const theme = e.target.getAttribute('data-theme');
+                    
+                    // Remove existing theme classes
+                    document.body.classList.remove('blue-theme', 'green-theme', 'orange-theme');
+                    
+                    // Add new theme class if not default
+                    if (theme !== 'default') {
+                        document.body.classList.add(`${theme}-theme`);
+                    }
+
+                    // Update card headers and other color-dependent elements
+                    updateThemeColors(theme);
+                });
+            });
+
+            // Function to update theme-dependent colors
+            function updateThemeColors(theme) {
+                const cards = document.querySelectorAll('.card-header');
+                const metricCards = document.querySelectorAll('.metric-card');
+
+                cards.forEach(card => {
+                    card.style.backgroundColor = getComputedStyle(document.body).getPropertyValue('--primary-color');
+                });
+
+                metricCards.forEach(card => {
+                    card.style.borderTopColor = getComputedStyle(document.body).getPropertyValue('--primary-color');
+                });
+            }
+
+            // Update DataTable with new data
+            const salesTableData = [
+                ['01', 'Januari', 13.699, 13.271],
+                ['02', 'Februari', 14.515, 14.656],
+                ['03', 'Maret', 14.632, 14.189],
+                ['04', 'April', 13.145, 13.025],
+                ['05', 'Mei', 12.512, 11.915],
+                ['06', 'Juni', 12.698, 12.181],
+                ['07', 'Juli', 13.087, 12.371],
+                ['08', 'Agustus', 13.140, 12.823],
+                ['09', 'September', 13.181, 12.685],
+                ['10', 'Oktober', 13.174, 12.773],
+                ['11', 'November', 12.982, 12.496],
+                ['12', 'Desember', 13.131, 12.665]
+            ];
+
+            $('#salesTable').DataTable({
+                data: salesTableData,
+                columns: [
+                    { title: 'No' },
+                    { title: 'Bulan' },
+                    { title: 'Harga Premium' },
+                    { title: 'Harga Medium' }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf'
+                ]
+            });
+
+            // Grafik Penjualan (Line Chart) - Updated to match table data
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [{
+                        label: 'Harga Premium',
+                        data: [13.699, 14.515, 14.632, 13.145, 12.512, 12.698, 13.087, 13.140, 13.181, 13.174, 12.982, 13.131],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }, {
+                        label: 'Harga Medium',
+                        data: [13.271, 14.656, 14.189, 13.025, 11.915, 12.181, 12.371, 12.823, 12.685, 12.773, 12.496, 12.665],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Grafik Batang - Updated to match table data
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [{
+                        label: 'Harga Premium',
+                        data: [13.699, 14.515, 14.632, 13.145, 12.512, 12.698, 13.087, 13.140, 13.181, 13.174, 12.982, 13.131],
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                    }, {
+                        label: 'Harga Medium',
+                        data: [13.271, 14.656, 14.189, 13.025, 11.915, 12.181, 12.371, 12.823, 12.685, 12.773, 12.496, 12.665],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Bulan'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Harga (Rp)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
